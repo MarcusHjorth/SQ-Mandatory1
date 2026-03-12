@@ -1,26 +1,33 @@
 services:
-  web:
+  app:
     build: .
     ports:
-      - '8080:80'
+      - '8081:8081'
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
-      DB_HOST: db
-      DB_NAME: addresses
-      DB_USER: root
-      DB_PASSWORD: ''
-    volumes:
-      - ./:/var/www/html
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/addresses
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SERVER_PORT: 8081
 
   db:
-    image: mariadb:11
+    image: postgres:17
+    ports:
+      - '5433:5432'
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
-      MYSQL_ROOT_PASSWORD: ''
+      POSTGRES_DB: addresses
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d addresses"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
-      - db_data:/var/lib/mysql
-      - ./db/addresses.sql:/docker-entrypoint-initdb.d/01-addresses.sql:ro
+      - db_data:/var/lib/postgresql/data
+      - ./db/init/01-addresses.sql:/docker-entrypoint-initdb.d/01-addresses.sql:ro
 
 volumes:
   db_data:

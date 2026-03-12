@@ -1,9 +1,17 @@
-FROM php:8.2-apache
+FROM maven:3.9.9-eclipse-temurin-21 AS build
+WORKDIR /app
 
-RUN a2enmod rewrite
+COPY pom.xml .
+COPY src ./src
+COPY data ./data
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN mvn -q -DskipTests package
 
-COPY apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+FROM eclipse-temurin:21-jre
+WORKDIR /app
 
-WORKDIR /var/www/html
+COPY --from=build /app/target/fake-info-1.0.0.jar app.jar
+
+EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
