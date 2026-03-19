@@ -24,6 +24,18 @@ Java/Spring Boot REST API that generates fake data for nonexistent Danish person
 The API is available at `http://localhost:8081`.
 PostgreSQL is exposed on `localhost:5433` for local IntelliJ runs.
 
+## Tests
+
+The project is set up with JUnit 5 and Mockito.
+
+- Run all tests: `mvn test`
+- Run one test class: `mvn -Dtest=FakeInfoServiceTest test`
+
+Current test layout:
+
+- `src/test/java/dk/fakeinfo/service`: fast unit tests with mocked dependencies
+- `src/test/java/dk/fakeinfo/controller`: controller unit tests without starting Spring
+
 ## API Endpoints
 
 | Method | Endpoint |
@@ -102,5 +114,4 @@ PostgreSQL is exposed on `localhost:5433` for local IntelliJ runs.
 
 ## Notes
 
-- The legacy PHP files are still present in the repository as reference material during the migration.
 - The Java implementation preserves the existing endpoint names and response shapes so consumers do not need to change.
